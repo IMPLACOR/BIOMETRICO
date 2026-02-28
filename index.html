@@ -165,20 +165,21 @@ window.addEventListener("load", cargarNombresTXT);
 async function cargarNombresTXT() {
 
     try {
-const response = await fetch(
-  `https://api.github.com/repos/${usuario}/${repo}/contents/${archivo}`
-);
+
+        const response = await fetch(
+            `https://api.github.com/repos/${usuario}/${repo}/contents/${archivo}`
+        );
 
         const data = await response.json();
 
+        if (!response.ok) {
+            alert("Error GitHub: " + data.message);
+            return;
+        }
+
         shaNombres = data.sha;
 
-        if (!response.ok) {
-    alert("Error GitHub: " + data.message);
-    return;
-}
-
-let contenido = atob(data.content);
+        let contenido = atob(data.content.replace(/\n/g, ""));
         nombresTXT = contenido.split("\n").filter(n => n.trim() !== "");
 
         mostrarListaNombres();
@@ -230,18 +231,21 @@ async function guardarNombres() {
         let contenidoFinal = nombresTXT.join("\n");
         let contenidoBase64 = btoa(contenidoFinal);
 
-        const response = await fetch(`https://api.github.com/repos/${usuario}/${repo}/contents/${archivo}`, {
-            method: "PUT",
-            headers: {
-                "Authorization": "token " + token,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                message: "Actualizar nombres desde web",
-                content: contenidoBase64,
-                sha: shaNombres
-            })
-        });
+        const response = await fetch(
+            `https://api.github.com/repos/${usuario}/${repo}/contents/${archivo}`,
+            {
+                method: "PUT",
+                headers: {
+                    "Authorization": "Bearer " + token,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    message: "Actualizar nombres desde web",
+                    content: contenidoBase64,
+                    sha: shaNombres
+                })
+            }
+        );
 
         const data = await response.json();
 
@@ -249,7 +253,7 @@ async function guardarNombres() {
             alert("nombres.txt actualizado correctamente");
             shaNombres = data.content.sha;
         } else {
-            alert("Error guardando en GitHub");
+            alert("Error guardando: " + data.message);
             console.error(data);
         }
 
