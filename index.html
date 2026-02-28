@@ -1,99 +1,162 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Administrador de Nombres</title>
-  <style>
-    body { font-family: Arial; text-align:center; margin-top:40px; }
-    input { padding:8px; width:200px; }
-    button { padding:8px 15px; margin:5px; }
-    ul { list-style:none; padding:0; }
-  </style>
+<meta charset="UTF-8">
+<title>Administrador de Nombres</title>
+<style>
+body { font-family: Arial; text-align:center; margin-top:40px; }
+input { padding:8px; width:200px; }
+button { padding:8px 15px; margin:5px; cursor:pointer; }
+ul { list-style:none; padding:0; }
+li { margin:6px; }
+</style>
 </head>
 <body>
 
 <h2>Administrar Nombres</h2>
 
 <input type="text" id="nuevoNombre" placeholder="Escribir nombre">
-<br>
-<button onclick="agregarNombre()">Agregar</button>
-<button onclick="guardarCambios()">Guardar Cambios</button>
+<br><br>
+<button id="btnAgregar">Agregar</button>
+<button id="btnGuardar">Guardar Cambios</button>
 
 <h3>Lista actual</h3>
 <ul id="listaNombres"></ul>
 
 <script>
 
+// ===== CONFIG =====
 const usuario = "202000790-alt";
 const repo = "biometrico2";
 const archivo = "nombres.txt";
-const token = "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"; // ⚠ SOLO PARA USO PRIVADO
+const rama = "main";
+const token = "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"; // ← PON TU TOKEN NUEVO
 
 let nombres = [];
 
+// ===== CARGAR NOMBRES =====
 async function cargarNombres() {
-  const respuesta = await fetch(
-    `https://api.github.com/repos/${usuario}/${repo}/contents/${archivo}`
-  );
-  const data = await respuesta.json();
-  const contenido = atob(data.content);
-  nombres = contenido.split("\n").filter(n => n.trim() !== "");
-  mostrarLista();
+  try {
+
+    const response = await fetch(
+      `https://api.github.com/repos/${usuario}/${repo}/contents/${archivo}?ref=${rama}`,
+      {
+        headers: {
+          "Authorization": "token " + token
+        }
+      }
+    );
+
+    if (!response.ok) {
+      console.log("Error lectura:", response.status);
+      return;
+    }
+
+    const data = await response.json();
+
+    const contenido = atob(data.content.replace(/\n/g, ""));
+
+    nombres = contenido.split("\n").filter(n => n.trim() !== "");
+
+    mostrarLista();
+
+  } catch (error) {
+    console.log("Error cargar:", error);
+  }
 }
 
+// ===== MOSTRAR LISTA =====
 function mostrarLista() {
   const ul = document.getElementById("listaNombres");
   ul.innerHTML = "";
+
   nombres.forEach((nombre, index) => {
+
     const li = document.createElement("li");
-    li.innerHTML = `${nombre} 
-    <button onclick="eliminarNombre(${index})">X</button>`;
+    li.textContent = nombre + " ";
+
+    const btn = document.createElement("button");
+    btn.textContent = "X";
+    btn.onclick = function() {
+      eliminarNombre(index);
+    };
+
+    li.appendChild(btn);
     ul.appendChild(li);
   });
 }
 
+// ===== AGREGAR =====
 function agregarNombre() {
-  const nuevo = document.getElementById("nuevoNombre").value.trim();
+  const input = document.getElementById("nuevoNombre");
+  const nuevo = input.value.trim();
+
   if (nuevo !== "") {
     nombres.push(nuevo);
-    document.getElementById("nuevoNombre").value = "";
+    input.value = "";
     mostrarLista();
   }
 }
 
+// ===== ELIMINAR =====
 function eliminarNombre(index) {
   nombres.splice(index, 1);
   mostrarLista();
 }
 
+// ===== GUARDAR =====
 async function guardarCambios() {
+  try {
 
-  const respuesta = await fetch(
-    `https://api.github.com/repos/${usuario}/${repo}/contents/${archivo}`
-  );
-  const data = await respuesta.json();
+    const response = await fetch(
+      `https://api.github.com/repos/${usuario}/${repo}/contents/${archivo}?ref=${rama}`,
+      {
+        headers: {
+          "Authorization": "token " + token
+        }
+      }
+    );
 
-  const nuevoContenido = btoa(nombres.join("\n"));
+    const data = await response.json();
 
-  await fetch(
-    `https://api.github.com/repos/${usuario}/${repo}/contents/${archivo}`,
-    {
-      method: "PUT",
-      headers: {
-        "Authorization": "token " + token,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        message: "Actualizando nombres",
-        content: nuevoContenido,
-        sha: data.sha
-      })
+    const contenidoNuevo = btoa(nombres.join("\n"));
+
+    const putResponse = await fetch(
+      `https://api.github.com/repos/${usuario}/${repo}/contents/${archivo}`,
+      {
+        method: "PUT",
+        headers: {
+          "Authorization": "token " + token,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message: "Actualizando nombres desde web",
+          content: contenidoNuevo,
+          sha: data.sha,
+          branch: rama
+        })
+      }
+    );
+
+    if (putResponse.ok) {
+      alert("Nombres actualizados correctamente");
+      cargarNombres();
+    } else {
+      const error = await putResponse.text();
+      console.log(error);
+      alert("Error al guardar");
     }
-  );
 
-  alert("Nombres actualizados correctamente");
+  } catch (error) {
+    console.log("Error guardar:", error);
+  }
 }
 
+// ===== EVENTOS BOTONES =====
+document.getElementById("btnAgregar").addEventListener("click", agregarNombre);
+document.getElementById("btnGuardar").addEventListener("click", guardarCambios);
+
+// Cargar al iniciar
 cargarNombres();
 
 </script>
