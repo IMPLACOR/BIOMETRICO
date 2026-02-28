@@ -1,217 +1,97 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>IMPLACOR - Registros</title>
-
-<style>
-body { font-family: Arial; text-align:center; }
-button { padding:8px 15px; margin:5px; }
-select { padding:5px; }
-input { padding:5px; }
-ul { list-style:none; padding:0; }
-li { margin:5px; }
-.admin-box { margin-top:40px; padding:20px; border-top:2px solid #ccc; }
-</style>
-
+  <meta charset="UTF-8">
+  <title>Administrador de Nombres</title>
+  <style>
+    body { font-family: Arial; text-align:center; margin-top:40px; }
+    input { padding:8px; width:200px; }
+    button { padding:8px 15px; margin:5px; }
+    ul { list-style:none; padding:0; }
+  </style>
 </head>
 <body>
 
-<h2>Filtrar registros por trabajador</h2>
-
-<button onclick="cargarCSV()">Cargar CSV</button>
-<br><br>
-
-<select id="trabajadores"></select>
-<button onclick="filtrar()">Ordenar y Descargar</button>
-
-<div class="admin-box">
-
-<h2>Administrar Nombres Disponibles</h2>
+<h2>Administrar Nombres</h2>
 
 <input type="text" id="nuevoNombre" placeholder="Escribir nombre">
+<br>
 <button onclick="agregarNombre()">Agregar</button>
-<button onclick="guardarNombres()">Guardar Cambios</button>
+<button onclick="guardarCambios()">Guardar Cambios</button>
 
-<h3>Lista actual:</h3>
+<h3>Lista actual</h3>
 <ul id="listaNombres"></ul>
-
-</div>
 
 <script>
 
-// ===== CONFIG =====
 const usuario = "202000790-alt";
 const repo = "biometrico2";
-const archivoNombres = "nombres.txt";
-const branch = "main";
-const token = "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";
-// ================= CSV =================
+const archivo = "nombres.txt";
+const token = "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"; // ⚠ SOLO PARA USO PRIVADO
 
-let datos = [];
-
-async function cargarCSV() {
-
-    const url = `https://raw.githubusercontent.com/${usuario}/${repo}/${branch}/registros.csv`;
-    const response = await fetch(url);
-    const text = await response.text();
-
-    datos = text.trim().split("\n").map(line => line.split(","));
-
-    let nombres = [...new Set(datos.slice(1).map(row => row[2]))];
-
-    let select = document.getElementById("trabajadores");
-    select.innerHTML = "";
-
-    nombres.forEach(nombre => {
-        let option = document.createElement("option");
-        option.value = nombre;
-        option.text = nombre;
-        select.appendChild(option);
-    });
-
-    alert("CSV cargado correctamente");
-}
-
-function filtrar() {
-
-    let nombre = document.getElementById("trabajadores").value;
-
-    let registros = datos.slice(1).filter(row => row[2] === nombre);
-
-    let agrupado = {};
-
-    registros.forEach(row => {
-        let fecha = row[0];
-        let hora = row[1];
-        if (!agrupado[fecha]) agrupado[fecha] = [];
-        agrupado[fecha].push(hora);
-    });
-
-    let resultado = "Fecha,Ingreso,Almuerzo,Retorno,Salida\n";
-
-    Object.keys(agrupado).sort().forEach(fecha => {
-        let horas = agrupado[fecha].sort();
-        let ingreso = horas[0] || "";
-        let almuerzo = horas[1] || "";
-        let retorno = horas[2] || "";
-        let salida = horas[3] || "";
-
-        resultad o += `${fecha},${ingreso},${almuerzo},${retorno},${salida}\n`;
-    });
-
-    let blob = new Blob([resultado], { type: "text/csv" });
-    let link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = nombre + "_ordenado.csv";
-    link.click();
-}
-
-// ================= NOMBRES =================
-
-let nombresLista = [];
+let nombres = [];
 
 async function cargarNombres() {
-
-    try {
-        const response = await fetch(
-            `https://api.github.com/repos/${usuario}/${repo}/contents/${archivoNombres}?ref=${branch}`,
-            {
-                headers: {
-                    Authorization: `token ${token}`
-                }
-            }
-        );
-
-        if (!response.ok) {
-            console.log("Error lectura:", response.status);
-            return;
-        }
-
-        const data = await response.json();
-        const base64 = data.content.replace(/\n/g, "");
-        const contenido = atob(base64);
-
-        nombresLista = contenido.split("\n").filter(n => n.trim() !== "");
-        mostrarLista();
-
-    } catch (error) {
-        console.log("Error:", error);
-    }
+  const respuesta = await fetch(
+    `https://api.github.com/repos/${usuario}/${repo}/contents/${archivo}`
+  );
+  const data = await respuesta.json();
+  const contenido = atob(data.content);
+  nombres = contenido.split("\n").filter(n => n.trim() !== "");
+  mostrarLista();
 }
 
 function mostrarLista() {
-    const ul = document.getElementById("listaNombres");
-    ul.innerHTML = "";
-
-    nombresLista.forEach((nombre, index) => {
-        let li = document.createElement("li");
-        li.innerHTML = `${nombre} 
-        <button onclick="eliminarNombre(${index})">Eliminar</button>`;
-        ul.appendChild(li);
-    });
+  const ul = document.getElementById("listaNombres");
+  ul.innerHTML = "";
+  nombres.forEach((nombre, index) => {
+    const li = document.createElement("li");
+    li.innerHTML = `${nombre} 
+    <button onclick="eliminarNombre(${index})">X</button>`;
+    ul.appendChild(li);
+  });
 }
 
 function agregarNombre() {
-    const nuevo = document.getElementById("nuevoNombre").value.trim();
-    if (nuevo !== "") {
-        nombresLista.push(nuevo);
-        document.getElementById("nuevoNombre").value = "";
-        mostrarLista();
-    }
+  const nuevo = document.getElementById("nuevoNombre").value.trim();
+  if (nuevo !== "") {
+    nombres.push(nuevo);
+    document.getElementById("nuevoNombre").value = "";
+    mostrarLista();
+  }
 }
 
 function eliminarNombre(index) {
-    nombresLista.splice(index, 1);
-    mostrarLista();
+  nombres.splice(index, 1);
+  mostrarLista();
 }
 
-async function guardarNombres() {
+async function guardarCambios() {
 
-    try {
+  const respuesta = await fetch(
+    `https://api.github.com/repos/${usuario}/${repo}/contents/${archivo}`
+  );
+  const data = await respuesta.json();
 
-        const getResponse = await fetch(
-            `https://api.github.com/repos/${usuario}/${repo}/contents/${archivoNombres}?ref=${branch}`,
-            {
-                headers: {
-                    Authorization: `token ${token}`
-                }
-            }
-        );
+  const nuevoContenido = btoa(nombres.join("\n"));
 
-        const getData = await getResponse.json();
-        const sha = getData.sha;
-
-        const contenido = nombresLista.join("\n");
-        const contenidoBase64 = btoa(contenido);
-
-        const putResponse = await fetch(
-            `https://api.github.com/repos/${usuario}/${repo}/contents/${archivoNombres}`,
-            {
-                method: "PUT",
-                headers: {
-                    Authorization: `token ${token}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    message: "Actualizar nombres desde web",
-                    content: contenidoBase64,
-                    sha: sha,
-                    branch: branch
-                })
-            }
-        );
-
-        if (putResponse.ok) {
-            alert("Archivo actualizado correctamente");
-            cargarNombres();
-        } else {
-            alert("Error actualizando");
-        }
-
-    } catch (error) {
-        console.log("Error guardando:", error);
+  await fetch(
+    `https://api.github.com/repos/${usuario}/${repo}/contents/${archivo}`,
+    {
+      method: "PUT",
+      headers: {
+        "Authorization": "token " + token,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: "Actualizando nombres",
+        content: nuevoContenido,
+        sha: data.sha
+      })
     }
+  );
+
+  alert("Nombres actualizados correctamente");
 }
 
 cargarNombres();
