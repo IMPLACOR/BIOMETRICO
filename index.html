@@ -165,18 +165,20 @@ window.addEventListener("load", cargarNombresTXT);
 async function cargarNombresTXT() {
 
     try {
-
-        const response = await fetch(`https://api.github.com/repos/${usuario}/${repo}/contents/${archivo}`, {
-            headers: {
-                "Authorization": "token " + token
-            }
-        });
+const response = await fetch(
+  `https://api.github.com/repos/${usuario}/${repo}/contents/${archivo}`
+);
 
         const data = await response.json();
 
         shaNombres = data.sha;
 
-        let contenido = atob(data.content);
+        if (!response.ok) {
+    alert("Error GitHub: " + data.message);
+    return;
+}
+
+let contenido = atob(data.content);
         nombresTXT = contenido.split("\n").filter(n => n.trim() !== "");
 
         mostrarListaNombres();
