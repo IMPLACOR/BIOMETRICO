@@ -14,24 +14,52 @@ body {
     flex-direction: column;
 }
 
-/* ===== HEADER ===== */
+/* ===== HEADER PRO ===== */
 header {
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(10px);
-    padding: 20px;
+    background: linear-gradient(135deg, #001f3f, #003366, #004aad);
+    padding: 30px 20px;
     text-align: center;
     color: white;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    position: relative;
+    overflow: hidden;
 }
 
+/* Línea decorativa inferior */
+header::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 4px;
+    background: #00c6ff;
+    border-radius: 2px;
+}
+
+/* Logo */
 header img {
-    width: 80px;
-    margin-bottom: 10px;
+    width: 90px;
+    margin-bottom: 15px;
+    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.4));
 }
 
+/* Título principal */
 header h1 {
-    font-weight: 600;
-    font-size: 24px;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+/* Subtítulo opcional */
+header h1 span {
+    display: block;
+    font-size: 14px;
+    font-weight: 300;
+    letter-spacing: 3px;
+    opacity: 0.8;
 }
 
 /* ===== CONTAINER ===== */
