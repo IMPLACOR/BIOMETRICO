@@ -147,3 +147,21 @@ function descargar() {
     link.download = "ordenado.csv";
     link.click();
 }
+
+// ===== LOADER AL ENTRAR =====
+window.addEventListener("load", function () {
+    setTimeout(() => {
+        document.getElementById("loader").classList.add("hidden");
+    }, 1500); // 1.5 segundos
+});
+
+// ===== FUNCION PARA MOSTRAR LOADER =====
+function mostrarLoader() {
+    const loader = document.getElementById("loader");
+    loader.classList.remove("hidden");
+
+    setTimeout(() => {
+        loader.classList.add("hidden");
+    }, 1000); // duración animación
+}
+
