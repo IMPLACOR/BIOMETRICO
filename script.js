@@ -56,7 +56,19 @@ function ordenar() {
     let tbody = document.querySelector("#tabla tbody");
     tbody.innerHTML = "";
 
-    Object.keys(agrupado).sort().forEach(fecha => {
+    Object.keys(agrupado)
+.sort((a, b) => {
+
+    let [da, ma, ya] = a.split("/");
+    let [db, mb, yb] = b.split("/");
+
+    let fechaA = new Date(ya, ma - 1, da);
+    let fechaB = new Date(yb, mb - 1, db);
+
+    return fechaA - fechaB;
+
+})
+.forEach(fecha => {
 
         let horas = agrupado[fecha].sort();
 
