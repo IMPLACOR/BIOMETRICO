@@ -30,9 +30,58 @@ async function cargarCSV() {
     }
 }
 
+function procesar() {
+
+    let trabajador = document.getElementById("trabajadores").value;
+
+    let registros = datos.slice(1).filter(row => row[2] === trabajador);
+
+    let agrupado = {};
+
+    registros.forEach(row => {
+
+        let fecha = row[0];
+        let hora = row[1];
+
+        if (!agrupado[fecha]) {
+            agrupado[fecha] = [];
+        }
+
+        agrupado[fecha].push(hora);
+    });
+
+    datosOrdenados = [];
+
+    let tbody = document.querySelector("#tabla tbody");
+    tbody.innerHTML = "";
+
+    for (let fecha in agrupado) {
+
+        let turnos = ordenarTurnos(agrupado[fecha]);
+
+        datosOrdenados.push(
+            `${fecha},${turnos.IngresoA},${turnos.SalidaA},${turnos.IngresoB},${turnos.SalidaB}`
+        );
+
+        // 🔥 PINTAR EN TABLA
+        let fila = `
+            <tr>
+                <td>${fecha}</td>
+                <td>${turnos.IngresoA}</td>
+                <td>${turnos.SalidaA}</td>
+                <td>${turnos.IngresoB}</td>
+                <td>${turnos.SalidaB}</td>
+            </tr>
+        `;
+
+        tbody.innerHTML += fila;
+    }
+
+    alert("Datos procesados correctamente");
+}
+
 function ordenarTurnos(marcas) {
 
-    // Ordenar horas correctamente
     marcas.sort((a, b) => a.localeCompare(b));
 
     let resultado = {
@@ -44,7 +93,6 @@ function ordenarTurnos(marcas) {
 
     const LIMITE = "12:30";
 
-    // ===== 1 MARCA =====
     if (marcas.length === 1) {
 
         if (marcas[0] < LIMITE) {
@@ -54,21 +102,17 @@ function ordenarTurnos(marcas) {
         }
     }
 
-    // ===== 2 MARCAS =====
     else if (marcas.length === 2) {
 
         if (marcas[0] < LIMITE) {
-            // Turno A completo
             resultado.IngresoA = marcas[0];
             resultado.SalidaA  = marcas[1];
         } else {
-            // Turno B completo
             resultado.IngresoB = marcas[0];
             resultado.SalidaB  = marcas[1];
         }
     }
 
-    // ===== 3 MARCAS (caso raro pero posible) =====
     else if (marcas.length === 3) {
 
         if (marcas[0] < LIMITE) {
@@ -81,7 +125,6 @@ function ordenarTurnos(marcas) {
         }
     }
 
-    // ===== 4 O MÁS MARCAS =====
     else if (marcas.length >= 4) {
 
         resultado.IngresoA = marcas[0];
