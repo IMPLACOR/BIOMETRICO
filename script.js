@@ -145,9 +145,15 @@ function descargar() {
 
     let trabajador = document.getElementById("trabajadores").value;
 
-    // Buscar el PIN del trabajador
+    // 🔥 Buscar el primer registro del trabajador
     let registro = datos.find(row => row[2] === trabajador);
-    let pin = registro ? registro[4] : "SINPIN";
+
+    if (!registro) {
+        alert("No se encontró el PIN");
+        return;
+    }
+
+    let pin = registro[4];  // ✅ columna 4
 
     let encabezado = "Fecha,IngresoA,SalidaA,IngresoB,SalidaB\n";
     let contenido = encabezado + datosOrdenados.join("\n");
@@ -158,8 +164,8 @@ function descargar() {
     let link = document.createElement("a");
     link.href = url;
 
-    // 🔥 NOMBRE DINÁMICO
-    link.download = `ordenado_${pin}.csv`;
+    // 🔥 Nombre solo con PIN
+    link.download = `${pin}.csv`;
 
     document.body.appendChild(link);
     link.click();
