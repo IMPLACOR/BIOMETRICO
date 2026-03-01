@@ -1,142 +1,53 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>IMPLACOR - Sistema Biométrico</title>
 
-<style>
-body { font-family: Arial; text-align:center; }
-button { padding:10px 20px; margin:10px; font-size:15px; }
-select { padding:5px; }
-table { border-collapse: collapse; margin:auto; margin-top:20px;}
-th, td { border:1px solid black; padding:6px; }
-</style>
+<link rel="stylesheet" href="css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 </head>
+
 <body>
 
-<h2>IMPLACOR - Registros Biométricos</h2>
+<header>
+    <img src="img/logo.png" alt="Logo IMPLACOR">
+    <h1>IMPLACOR - Sistema Biométrico</h1>
+</header>
 
-<button onclick="cargarCSV()">Cargar CSV desde GitHub</button>
+<div class="container">
 
-<br><br>
+    <div class="controls">
+        <button onclick="cargarCSV()">Cargar CSV</button>
 
-<select id="trabajadores"></select>
-<button onclick="ordenar()">Ordenar</button>
-<button onclick="descargar()">Descargar CSV Ordenado</button>
+        <select id="trabajadores"></select>
 
-<table id="tabla">
-<thead>
-<tr>
-<th>Fecha</th>
-<th>Ingreso</th>
-<th>Almuerzo</th>
-<th>Retorno</th>
-<th>Salida</th>
-</tr>
-</thead>
-<tbody></tbody>
-</table>
+        <button onclick="ordenar()">Ordenar</button>
+        <button onclick="descargar()">Descargar CSV</button>
+    </div>
 
-<script>
-
-let datos = [];
-let datosOrdenados = [];
-
-async function cargarCSV() {
-
-    try {
-
-        const response = await fetch("registros.csv?nocache=" + new Date().getTime());
-        const text = await response.text();
-
-        datos = text.trim().split("\n").map(line => line.split(","));
-
-        // Asumimos formato:
-        // Fecha,Hora,Nombre
-
-        let nombres = [...new Set(datos.slice(1).map(row => row[2]))];
-
-        let select = document.getElementById("trabajadores");
-        select.innerHTML = "";
-
-        nombres.forEach(nombre => {
-            let option = document.createElement("option");
-            option.value = nombre;
-            option.text = nombre;
-            select.appendChild(option);
-        });
-
-        alert("CSV cargado correctamente desde GitHub");
-
-    } catch (error) {
-        alert("Error cargando CSV");
-        console.error(error);
-    }
-}
-
-function ordenar() {
-
-    let nombre = document.getElementById("trabajadores").value;
-
-    let registros = datos
-        .slice(1)
-        .filter(row => row[2] === nombre);
-
-    let agrupado = {};
-
-    registros.forEach(row => {
-
-        let fecha = row[0];
-        let hora = row[1];
-
-        if (!agrupado[fecha]) {
-            agrupado[fecha] = [];
-        }
-
-        agrupado[fecha].push(hora);
-    });
-
-    datosOrdenados = [];
-    let tbody = document.querySelector("#tabla tbody");
-    tbody.innerHTML = "";
-
-    Object.keys(agrupado).sort().forEach(fecha => {
-
-        let horas = agrupado[fecha].sort();
-
-        let ingreso  = horas[0] || "";
-        let almuerzo = horas[1] || "";
-        let retorno  = horas[2] || "";
-        let salida   = horas[3] || "";
-
-        datosOrdenados.push(`${fecha},${ingreso},${almuerzo},${retorno},${salida}`);
-
-        let fila = `
+    <table id="tabla">
+        <thead>
         <tr>
-        <td>${fecha}</td>
-        <td>${ingreso}</td>
-        <td>${almuerzo}</td>
-        <td>${retorno}</td>
-        <td>${salida}</td>
-        </tr>`;
+            <th>Fecha</th>
+            <th>Ingreso</th>
+            <th>Almuerzo</th>
+            <th>Retorno</th>
+            <th>Salida</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 
-        tbody.innerHTML += fila;
-    });
-}
+</div>
 
-function descargar() {
+<footer>
+    © 2026 IMPLACOR - Sistema de Control Biométrico
+</footer>
 
-    let encabezado = "Fecha,Ingreso,Almuerzo,Retorno,Salida\n";
-    let contenido = encabezado + datosOrdenados.join("\n");
+<script src="js/script.js"></script>
 
-    let blob = new Blob([contenido], { type: "text/csv" });
-    let link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "ordenado.csv";
-    link.click();
-}
-
-
-    </body>
+</body>
 </html>
