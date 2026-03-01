@@ -148,14 +148,18 @@ table {
     overflow: hidden;
 }
 
+/* ===== ENCABEZADO TABLA VERDE MATE ===== */
 thead {
-    background: #004aad;
-    color: white;
+    background-color: #2f4f3f; /* mismo verde mate */
+    color: #ffffff;
 }
 
 thead th {
     padding: 12px;
     text-align: center;
+    font-weight: 600;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #243d31; /* línea más oscura elegante */
 }
 
 tbody td {
