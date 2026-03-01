@@ -20,18 +20,19 @@ body {
     animation: fadeDown 0.8s ease forwards;
 }
 
-/* Barra corporativa superior */
+/* ===== BARRA CORPORATIVA PREMIUM ===== */
 .top-bar {
-    height: 6px;
+    height: 12px; /* más gruesa */
     background: linear-gradient(
         to right,
-        #004aad 0%,
-        #004aad 33%,
-        #1e7e34 33%,
-        #1e7e34 66%,
-        #c82333 66%,
-        #c82333 100%
+        #003366 0%,
+        #003366 40%,
+        #1e7e34 40%,
+        #1e7e34 70%,
+        #a71d2a 70%,
+        #a71d2a 100%
     );
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
 }
 
 /* Contenido del header */
@@ -53,20 +54,20 @@ body {
 
 /* Título principal */
 .header-content h1 {
-    font-size: 26px;
-    font-weight: 700;
-    color: #003366;
-    letter-spacing: 1px;
+    font-size: 30px;
+    font-weight: 800;
+    color: #002b5c;
+    letter-spacing: 2px;
 }
 
-/* Subtítulo */
 .header-content h1 span {
     display: block;
-    font-size: 14px;
-    font-weight: 400;
-    color: #666;
-    letter-spacing: 2px;
-    margin-top: 5px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #444;
+    letter-spacing: 3px;
+    margin-top: 6px;
+    text-transform: uppercase;
 }
 
 /* Animación suave */
