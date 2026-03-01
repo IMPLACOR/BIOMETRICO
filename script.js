@@ -147,7 +147,7 @@ function descargar() {
 
     // Buscar el PIN del trabajador
     let registro = datos.find(row => row[2] === trabajador);
-    let pin = registro ? registro[3] : "SINPIN";
+    let pin = registro ? registro[4] : "SINPIN";
 
     let encabezado = "Fecha,IngresoA,SalidaA,IngresoB,SalidaB\n";
     let contenido = encabezado + datosOrdenados.join("\n");
