@@ -14,54 +14,74 @@ body {
     flex-direction: column;
 }
 
-/* ===== HEADER PRO ===== */
-header {
-    background: linear-gradient(135deg, #001f3f, #003366, #004aad);
-    padding: 30px 20px;
-    text-align: center;
-    color: white;
-    position: relative;
-    overflow: hidden;
+/* ===== HEADER EMPRESARIAL MODERNO ===== */
+
+.main-header {
+    background: white;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    animation: fadeDown 0.8s ease forwards;
 }
 
-/* Línea decorativa inferior */
-header::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 120px;
-    height: 4px;
-    background: #00c6ff;
-    border-radius: 2px;
+/* Barra corporativa superior */
+.top-bar {
+    height: 6px;
+    background: linear-gradient(
+        to right,
+        #004aad 0%,
+        #004aad 33%,
+        #1e7e34 33%,
+        #1e7e34 66%,
+        #c82333 66%,
+        #c82333 100%
+    );
+}
+
+/* Contenido del header */
+.header-content {
+    padding: 25px 20px;
+    text-align: center;
 }
 
 /* Logo */
-header img {
-    width: 90px;
-    margin-bottom: 15px;
-    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.4));
+.header-content img {
+    width: 85px;
+    margin-bottom: 10px;
+    transition: transform 0.3s ease;
+}
+
+.header-content img:hover {
+    transform: scale(1.05);
 }
 
 /* Título principal */
-header h1 {
-    font-size: 28px;
+.header-content h1 {
+    font-size: 26px;
     font-weight: 700;
+    color: #003366;
     letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-bottom: 5px;
 }
 
-/* Subtítulo opcional */
-header h1 span {
+/* Subtítulo */
+.header-content h1 span {
     display: block;
     font-size: 14px;
-    font-weight: 300;
-    letter-spacing: 3px;
-    opacity: 0.8;
+    font-weight: 400;
+    color: #666;
+    letter-spacing: 2px;
+    margin-top: 5px;
 }
 
+/* Animación suave */
+@keyframes fadeDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 /* ===== CONTAINER ===== */
 .container {
     flex: 1;
