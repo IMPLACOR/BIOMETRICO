@@ -138,14 +138,24 @@ function ordenarTurnos(marcas) {
 
 function descargar() {
 
+    if (datosOrdenados.length === 0) {
+        alert("Primero debes procesar los datos");
+        return;
+    }
+
     let encabezado = "Fecha,IngresoA,SalidaA,IngresoB,SalidaB\n";
     let contenido = encabezado + datosOrdenados.join("\n");
 
-    let blob = new Blob([contenido], { type: "text/csv" });
+    let blob = new Blob([contenido], { type: "text/csv;charset=utf-8;" });
+    let url = URL.createObjectURL(blob);
+
     let link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
+    link.href = url;
     link.download = "ordenado.csv";
+
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
 }
-
-
