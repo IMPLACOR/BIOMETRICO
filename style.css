@@ -101,25 +101,31 @@ body {
     margin-bottom: 25px;
 }
 
-/* ===== BUTTONS ===== */
+/* ===== BOTONES CORPORATIVOS MATE ===== */
 button {
-    background: linear-gradient(135deg, #004aad, #007bff);
+    background-color: #003b5c; /* azul mate profesional */
     color: white;
     border: none;
     padding: 10px 18px;
-    border-radius: 8px;
+    border-radius: 6px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.25s ease;
 }
 
+/* Hover elegante, no chillón */
 button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    background-color: #002a40;
 }
 
+/* Click */
 button:active {
-    transform: scale(0.95);
+    transform: scale(0.97);
+}
+
+/* Sombra muy sutil */
+button {
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
 }
 
 /* ===== SELECT ===== */
