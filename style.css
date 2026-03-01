@@ -6,12 +6,16 @@
 }
 
 /* ===== BODY ===== */
+/* ===== FONDO VERDE MATE EMPRESARIAL ===== */
 body {
     font-family: 'Poppins', sans-serif;
-    background: #f4f7fb;
+    background: linear-gradient(
+        180deg,
+        #2e4d3a 0%,
+        #2a4635 100%
+    );
     min-height: 100vh;
 }
-
 /* ===== HEADER EMPRESARIAL MODERNO ===== */
 
 .main-header {
