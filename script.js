@@ -30,110 +30,72 @@ async function cargarCSV() {
     }
 }
 
-function ordenar() {
+function ordenarTurnos(marcas) {
 
-    let nombre = document.getElementById("trabajadores").value;
+    // Ordenar horas correctamente
+    marcas.sort((a, b) => a.localeCompare(b));
 
-    let registros = datos
-        .slice(1)
-        .filter(row => row[2] === nombre);
+    let resultado = {
+        IngresoA: "",
+        SalidaA: "",
+        IngresoB: "",
+        SalidaB: ""
+    };
 
-    let agrupado = {};
+    const LIMITE = "12:30";
 
-    registros.forEach(row => {
+    // ===== 1 MARCA =====
+    if (marcas.length === 1) {
 
-        let fecha = row[0];
-        let hora = row[1];
-
-        if (!agrupado[fecha]) {
-            agrupado[fecha] = [];
+        if (marcas[0] < LIMITE) {
+            resultado.IngresoA = marcas[0];
+        } else {
+            resultado.IngresoB = marcas[0];
         }
-
-        agrupado[fecha].push(hora);
-    });
-
-    datosOrdenados = [];
-    let tbody = document.querySelector("#tabla tbody");
-    tbody.innerHTML = "";
-
-    Object.keys(agrupado)
-.sort((a, b) => {
-
-    let [da, ma, ya] = a.split("/");
-    let [db, mb, yb] = b.split("/");
-
-    let fechaA = new Date(ya, ma - 1, da);
-    let fechaB = new Date(yb, mb - 1, db);
-
-    return fechaA - fechaB;
-
-})
-.forEach(fecha => {
-
-        let horas = agrupado[fecha].sort();
-
-        let ingreso = "";
-let almuerzo = "";
-let retorno = "";
-let salida = "";
-
-if (horas.length === 1) {
-    ingreso = horas[0];
-}
-
-else if (horas.length === 2) {
-
-    let h1 = parseInt(horas[0].split(":")[0]);
-
-    if (h1 < 12) {
-        // Marcó en la mañana
-        ingreso = horas[0];
-        almuerzo = horas[1];
-    } else {
-        // Solo turno tarde
-        ingreso = horas[0];
-        salida = horas[1];
     }
-}
 
-else if (horas.length >= 3) {
+    // ===== 2 MARCAS =====
+    else if (marcas.length === 2) {
 
-    horas.forEach(h => {
-        let horaNum = parseInt(h.split(":")[0]);
-
-        if (horaNum < 12 && ingreso === "") {
-            ingreso = h;
+        if (marcas[0] < LIMITE) {
+            // Turno A completo
+            resultado.IngresoA = marcas[0];
+            resultado.SalidaA  = marcas[1];
+        } else {
+            // Turno B completo
+            resultado.IngresoB = marcas[0];
+            resultado.SalidaB  = marcas[1];
         }
-        else if (horaNum < 13 && almuerzo === "") {
-            almuerzo = h;
-        }
-        else if (horaNum >= 13 && retorno === "") {
-            retorno = h;
-        }
-        else {
-            salida = h;
-        }
-    });
-}
+    }
 
-        datosOrdenados.push(`${fecha},${ingreso},${almuerzo},${retorno},${salida}`);
+    // ===== 3 MARCAS (caso raro pero posible) =====
+    else if (marcas.length === 3) {
 
-        let fila = `
-        <tr>
-        <td>${fecha}</td>
-        <td>${ingreso}</td>
-        <td>${almuerzo}</td>
-        <td>${retorno}</td>
-        <td>${salida}</td>
-        </tr>`;
+        if (marcas[0] < LIMITE) {
+            resultado.IngresoA = marcas[0];
+            resultado.SalidaA  = marcas[1];
+            resultado.IngresoB = marcas[2];
+        } else {
+            resultado.IngresoB = marcas[0];
+            resultado.SalidaB  = marcas[1];
+        }
+    }
 
-        tbody.innerHTML += fila;
-    });
+    // ===== 4 O MÁS MARCAS =====
+    else if (marcas.length >= 4) {
+
+        resultado.IngresoA = marcas[0];
+        resultado.SalidaA  = marcas[1];
+        resultado.IngresoB = marcas[2];
+        resultado.SalidaB  = marcas[3];
+    }
+
+    return resultado;
 }
 
 function descargar() {
 
-    let encabezado = "Fecha,Ingreso,Almuerzo,Retorno,Salida\n";
+    let encabezado = "Fecha,IngresoA,SalidaA,IngresoB,SalidaB\n";
     let contenido = encabezado + datosOrdenados.join("\n");
 
     let blob = new Blob([contenido], { type: "text/csv" });
