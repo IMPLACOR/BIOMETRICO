@@ -72,10 +72,49 @@ function ordenar() {
 
         let horas = agrupado[fecha].sort();
 
-        let ingreso  = horas[0] || "";
-        let almuerzo = horas[1] || "";
-        let retorno  = horas[2] || "";
-        let salida   = horas[3] || "";
+        let ingreso = "";
+let almuerzo = "";
+let retorno = "";
+let salida = "";
+
+if (horas.length === 1) {
+    ingreso = horas[0];
+}
+
+else if (horas.length === 2) {
+
+    let h1 = parseInt(horas[0].split(":")[0]);
+
+    if (h1 < 12) {
+        // Marcó en la mañana
+        ingreso = horas[0];
+        almuerzo = horas[1];
+    } else {
+        // Solo turno tarde
+        ingreso = horas[0];
+        salida = horas[1];
+    }
+}
+
+else if (horas.length >= 3) {
+
+    horas.forEach(h => {
+        let horaNum = parseInt(h.split(":")[0]);
+
+        if (horaNum < 12 && ingreso === "") {
+            ingreso = h;
+        }
+        else if (horaNum < 13 && almuerzo === "") {
+            almuerzo = h;
+        }
+        else if (horaNum >= 13 && retorno === "") {
+            retorno = h;
+        }
+        else {
+            salida = h;
+        }
+    });
+}
 
         datosOrdenados.push(`${fecha},${ingreso},${almuerzo},${retorno},${salida}`);
 
