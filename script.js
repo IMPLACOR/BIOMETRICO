@@ -8,7 +8,7 @@ async function cargarCSV() {
         const response = await fetch("registros.csv?nocache=" + new Date().getTime());
         const text = await response.text();
 
-        datos = text.trim().split("\n").map(line => line.split(","));
+        datos = text.trim().split(/\r?\n/).map(line => line.split(","));
 
         let nombres = [...new Set(datos.slice(1).map(row => row[2]))];
 
