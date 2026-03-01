@@ -27,13 +27,14 @@
 <div class="container">
 
     <div class="controls">
-        <button onclick="cargarCSV()">Cargar CSV</button>
+       <button onclick="mostrarLoader(); cargarCSV()">Cargar</button>
 
         <select id="trabajadores"></select>
 
       
-       <button onclick="procesar()">Procesar</button>
-       <button onclick="descargar()">Descargar</button>
+       <button onclick="mostrarLoader(); procesar()">Procesar</button>
+
+      <button onclick="mostrarLoader(); descargarCSV()">Descargar</button>
     </div>
 
     <table id="tabla">
