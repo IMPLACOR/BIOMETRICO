@@ -10,15 +10,15 @@ async function cargarCSV() {
 
         datos = text.trim().split(/\r?\n/).map(line => line.split(","));
 
-        let nombres = [...new Set(datos.slice(1).map(row => row[2]))];
-
+        let trabajadores = [...new Set(datos.slice(1).map(row => row[2] + " | ID:" + row[3]))];
+        
         let select = document.getElementById("trabajadores");
         select.innerHTML = "";
-
-        nombres.forEach(nombre => {
+        
+        trabajadores.forEach(item => {
             let option = document.createElement("option");
-            option.value = nombre;
-            option.text = nombre;
+            option.value = item;
+            option.text = item;
             select.appendChild(option);
         });
 
@@ -55,19 +55,24 @@ function procesar() {
 let trabajador = document.getElementById("trabajadores").value;
 let mesSeleccionado = document.getElementById("mes").value;
 let idFiltro = document.getElementById("idFiltro").value;
-
+let partes = trabajador.split("| ID:");
+let nombreSeleccionado = partes[0].trim();
+let idSeleccionado = partes[1]?.trim();
 let registros = datos.slice(1).filter(row => {
 
-    let nombreOK = row[2] === trabajador;
-
-    // 🔥 EXTRAER MES CORRECTO (DD/MM/YYYY)
     let partesFecha = row[0].split("/");
     let mes = partesFecha[1];
 
+    let nombreOK = row[2] === nombreSeleccionado;
     let mesOK = mesSeleccionado === "" || mes === mesSeleccionado;
 
-    // 🔥 FILTRO POR HUELLA ID
-    let idOK = idFiltro === "" || row[3] === idFiltro;
+    let idOK;
+
+    if (idFiltro !== "") {
+        idOK = row[3] === idFiltro;
+    } else {
+        idOK = row[3] === idSeleccionado;
+    }
 
     return nombreOK && mesOK && idOK;
 });
@@ -182,7 +187,13 @@ function descargar() {
     let trabajador = document.getElementById("trabajadores").value;
 
     // 🔥 Buscar el primer registro del trabajador
-    let registro = datos.find(row => row[2] === trabajador);
+    let partes = trabajador.split("| ID:");
+    let nombreSeleccionado = partes[0].trim();
+    let idSeleccionado = partes[1]?.trim();
+    
+    let registro = datos.find(row => 
+        row[2] === nombreSeleccionado && row[3] === idSeleccionado
+    );
 
     if (!registro) {
         alert("No se encontró el PIN");
