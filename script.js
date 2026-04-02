@@ -30,11 +30,44 @@ async function cargarCSV() {
     }
 }
 
+let logs = [];
+
+async function cargarLOG() {
+
+    try {
+
+        const response = await fetch("logs.csv?nocache=" + new Date().getTime());
+        const text = await response.text();
+
+        logs = text.trim().split(/\r?\n/).map(line => line.split(","));
+
+        mostrarLogs();
+
+        alert("Logs cargados correctamente");
+
+    } catch (error) {
+        alert("Error cargando logs");
+        console.error(error);
+    }
+}
 function procesar() {
 
     let trabajador = document.getElementById("trabajadores").value;
 
-    let registros = datos.slice(1).filter(row => row[2] === trabajador);
+    let mesSeleccionado = document.getElementById("mes").value;
+    let idFiltro = document.getElementById("idFiltro").value;
+    
+    let registros = datos.slice(1).filter(row => {
+    
+        let nombreOK = row[2] === trabajador;
+    
+        let mes = row[0].split("/")[1]; // formato DD/MM/YYYY
+        let mesOK = mesSeleccionado === "" || mes === mesSeleccionado;
+    
+        let idOK = idFiltro === "" || row[3] === idFiltro;
+    
+        return nombreOK && mesOK && idOK;
+    });
 
     let agrupado = {};
 
@@ -172,4 +205,22 @@ function descargar() {
     document.body.removeChild(link);
 
     URL.revokeObjectURL(url);
+}
+
+function mostrarLogs() {
+
+    let tbody = document.querySelector("#tabla tbody");
+    tbody.innerHTML = "";
+
+    logs.slice(1).forEach(row => {
+
+        let fila = `
+            <tr>
+                <td>${row[0]}</td>
+                <td colspan="4">${row[2]}</td>
+            </tr>
+        `;
+
+        tbody.innerHTML += fila;
+    });
 }
