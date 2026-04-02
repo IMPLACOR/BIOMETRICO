@@ -52,22 +52,25 @@ async function cargarLOG() {
 }
 function procesar() {
 
-    let trabajador = document.getElementById("trabajadores").value;
+let trabajador = document.getElementById("trabajadores").value;
+let mesSeleccionado = document.getElementById("mes").value;
+let idFiltro = document.getElementById("idFiltro").value;
 
-    let mesSeleccionado = document.getElementById("mes").value;
-    let idFiltro = document.getElementById("idFiltro").value;
-    
-    let registros = datos.slice(1).filter(row => {
-    
-        let nombreOK = row[2] === trabajador;
-    
-        let mes = row[0].split("/")[1]; // formato DD/MM/YYYY
-        let mesOK = mesSeleccionado === "" || mes === mesSeleccionado;
-    
-        let idOK = idFiltro === "" || row[3] === idFiltro;
-    
-        return nombreOK && mesOK && idOK;
-    });
+let registros = datos.slice(1).filter(row => {
+
+    let nombreOK = row[2] === trabajador;
+
+    // 🔥 EXTRAER MES CORRECTO (DD/MM/YYYY)
+    let partesFecha = row[0].split("/");
+    let mes = partesFecha[1];
+
+    let mesOK = mesSeleccionado === "" || mes === mesSeleccionado;
+
+    // 🔥 FILTRO POR HUELLA ID
+    let idOK = idFiltro === "" || row[3] === idFiltro;
+
+    return nombreOK && mesOK && idOK;
+});
 
     let agrupado = {};
 
